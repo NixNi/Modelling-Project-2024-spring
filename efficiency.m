@@ -21,11 +21,10 @@ end
 
 function dsf = calculate_dsf(a, a_prime)
     [m, n] = size(a);
-    % Calculate the mean Euclidean distance between corresponding pixels
-    E_d = sqrt(sum((a(:) - a_prime(:)).^2) / (m * n));
-    % Maximum possible distance
-    E_d_max = sqrt((m - 1)^2 + (n - 1)^2);
-    dsf = E_d / E_d_max;
+    % Calculate the sum of squared differences
+    sum_squared_diff = sum((a(:) - a_prime(:)).^2);
+    % Normalize by the maximum possible distance
+    dsf = sqrt(sum_squared_diff) / sqrt((m - 1)^2 + (n - 1)^2);
 end
 
 function gsf = calculate_gsf(a, a_prime)
@@ -37,16 +36,19 @@ end
 function o_squared = calculate_o(image)
     k = 8; % Размер блока
     [m, n] = size(image);
-    E_Bpl = zeros(floor(m / k), floor(n / k));
-    block_mean = mean(image, 'all');
+    block_means = [];
+    E_E_Bpl = mean(image(:)); % Среднее значение для всего изображения
+    
     for p = 1:k:m-k+1
         for l = 1:k:n-k+1
             block = image(p:p+k-1, l:l+k-1);
-            E_Bpl(floor(p/k)+1, floor(l/k)+1) = mean(block, 'all');
+            block_mean = mean(block(:));
+            block_means = [block_means; block_mean];
         end
     end
-    E_E_Bpl = mean(E_Bpl, 'all');
-    o_squared = sum((E_Bpl - E_E_Bpl).^2, 'all') / (floor(m / k) * floor(n / k));
+    
+    E_Bpl = mean(block_means); % Среднее значение для всех блоков
+    o_squared = sum((block_means - E_E_Bpl).^2) / (m * n);
 end
 
 function efficiency = evaluate_efficiency(a, a_prime)
@@ -68,9 +70,9 @@ function results = process_images(folder_path, a)
 end
 
 function print_results_table(results)
-    fprintf('%-20s %-20s\n', 'Prime Image', 'Efficiency');
-    fprintf('%-20s %-20s\n', '-----------', '----------');
+    fprintf('%-30s %-20s\n', 'Prime Image', 'Efficiency');
+    fprintf('%-30s %-20s\n', '-----------', '----------');
     for i = 1:size(results, 1)
-        fprintf('%-20s %-20.4f\n', results{i, 1}, results{i, 2});
+        fprintf('%-30s %-20.4f\n', results{i, 1}, results{i, 2});
     end
 end
