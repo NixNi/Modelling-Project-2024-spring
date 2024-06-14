@@ -11,10 +11,13 @@ function main()
     print_and_save_results_table(results, 'results.xlsx');
 end
 
-function image_array = load_image(file_path)
+function image_array = load_image(file_path, target_size)
     image = imread(file_path);
-    image = rgb2gray(image); % Преобразование в градации серого
-    image_array = image; % Преобразование к диапазону [0, 1]
+    image = rgb2gray(image); % Convert to grayscale
+    if nargin > 1
+        image = imresize(image, target_size);
+    end
+    image_array = image; % Return the resized image array
 end
 
 function dsf = calculate_dsf(a, a_prime)
@@ -66,15 +69,19 @@ end
 function results = process_images(folder_path, a)
     results = {};
     image_files = dir(fullfile(folder_path, '*.jpg'));
+    [m, n] = size(a);
 
     for i = 1:length(image_files)
         file_name = image_files(i).name;
         file_path_a_prime = fullfile(folder_path, file_name);
-        a_prime = load_image(file_path_a_prime);
+        a_prime = load_image(file_path_a_prime, [m, n]); % Resize 'a_prime' to match 'a'
+
         dsf = calculate_dsf(a, a_prime);
         gsf = calculate_gsf(a, a_prime);
         efficiency = dsf * gsf;
         entropy = calculate_entropy(a_prime);
+
+        % Store results in a cell array
         results{end+1, 1} = file_name;
         results{end, 2} = efficiency;
         results{end, 3} = dsf;
