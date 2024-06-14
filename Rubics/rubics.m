@@ -10,7 +10,7 @@ function main()
     % Step 1: Load image
     image = imread(input_image_path);
     
-    % Ensure image dimensions are multiples of 9
+    % Ensure image dimensions are multiples of 18
     [h, w, ~] = size(image);
     if mod(h, 9) ~= 0
         h_new = h + (9 - mod(h, 9));
