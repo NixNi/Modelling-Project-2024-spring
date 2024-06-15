@@ -1,5 +1,5 @@
 figure('Name', 'Изображения', 'Position', [100, 100, 800, 400]);
-original_image = imread('cameraman.png'); % Load your image here
+original_image = imread('len_std.jpg'); % Load your image here
 permutation_key = 123456; % Set your permutation key
 
 nexttile;

@@ -9,6 +9,12 @@ function main()
     
     % Step 1: Load image
     image = imread(input_image_path);
+
+    [h, w, c] = size(image); % Определение высоты, ширины и числа каналов изображения
+    if c == 1
+        % Если изображение черно-белое, дублируем его на три канала
+        image = repmat(image, [1, 1, 3]);
+    end
     
     % Ensure image dimensions are multiples of 18
     [h, w, ~] = size(image);
